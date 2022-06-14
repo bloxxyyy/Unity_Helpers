@@ -16,9 +16,10 @@ public class CsvLoader {
 	public Dictionary<string, string> GetDictionaryValues(string attributeId) {
 		var dictionary = new Dictionary<string, string>();
 		var lines = csvFile.text.Split(_LineSeperator);
+
 		int attributeIndex = -1;
 		var headers = lines[0].Split(_FieldSeperator, StringSplitOptions.None);
-
+		
 		for (int i = 0; i < headers.Length; i++) {
 			if (headers[i].Contains(attributeId)) {
 				attributeIndex = i;
