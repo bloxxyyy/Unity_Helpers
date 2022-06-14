@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,20 +14,24 @@ public class LocalizationSystem {
 	private static Dictionary<string, string> localisedNL;
 
 	public static bool isInit;
+	public static CsvLoader csvLoader = new CsvLoader();
 
-	public static void init() {
-		var csvLoader = new CsvLoader();
+	public static void Init() {
 		csvLoader.LoadCsv();
 
-		localisedEN = csvLoader.GetDictionaryValues("en");
-		localisedJP = csvLoader.GetDictionaryValues("jp");
-		localisedNL = csvLoader.GetDictionaryValues("nl");
+		UpdateDictionaries();
 
 		isInit = true;
 	}
 
+	public static void UpdateDictionaries() {
+		localisedEN = csvLoader.GetDictionaryValues("en");
+		localisedJP = csvLoader.GetDictionaryValues("jp");
+		localisedNL = csvLoader.GetDictionaryValues("nl");
+	}
+
 	public static string GetLocalizedValue(string key) {
-		if (!isInit) init();
+		if (!isInit) Init();
 
 		string value = key;
 
@@ -45,5 +50,36 @@ public class LocalizationSystem {
 		}
 
 		return value;
+	}
+
+	public static void Add(string key, string value) {
+		if(csvLoader == null) csvLoader = new CsvLoader();
+		if (value.Contains("\"")) value.Replace('"', '\"');
+		csvLoader.LoadCsv();
+		csvLoader.Add(key, value);
+		csvLoader.LoadCsv();
+		UpdateDictionaries();
+	}
+
+	public static void Replace(string key, string value) {
+		if(csvLoader == null) csvLoader = new CsvLoader();
+		if (value.Contains("\"")) value.Replace('"', '\"');
+		csvLoader.LoadCsv();
+		csvLoader.Edit(key, value);
+		csvLoader.LoadCsv();
+		UpdateDictionaries();
+	}
+
+	public static Dictionary<string, string> GetDictionaryForEditor() {
+		if (!isInit) Init();
+		return localisedEN;
+	}
+
+	public static void Remove(string key) {
+		if (csvLoader == null) csvLoader = new CsvLoader();
+		csvLoader.LoadCsv();
+		csvLoader.Remove(key);
+		csvLoader.LoadCsv();
+		UpdateDictionaries();
 	}
 }
