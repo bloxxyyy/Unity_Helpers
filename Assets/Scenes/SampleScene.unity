@@ -413,6 +413,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   localizedString:
     key: hello_world
+    language: 0
 --- !u!222 &616402733
 CanvasRenderer:
   m_ObjectHideFlags: 0

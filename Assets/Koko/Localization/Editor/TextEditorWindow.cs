@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using static LocalizationSystem;
 
-public class TranslationEditorWindow : EditorWindow {
+public class TextEditorWindow : EditorWindow {
 
 	private string _Search = "";
 	private Vector2 _Scroll;
@@ -13,9 +13,9 @@ public class TranslationEditorWindow : EditorWindow {
 	private Language _SelectedLanguage = Language.English;
 	private Language _OldValue = Language.English;
 
-	[MenuItem("Window/Koko/Translator")]
+	[MenuItem("Window/Koko/Text/TextEditor")]
     public static void Init() {
-        var window = (TranslationEditorWindow)GetWindow(typeof(TranslationEditorWindow));
+        var window = (TextEditorWindow)GetWindow(typeof(TextEditorWindow));
         window.Show();
     }
 
@@ -25,7 +25,7 @@ public class TranslationEditorWindow : EditorWindow {
 
 	public void OnGUI() {
 
-		GUILayout.Label("Translator", EditorStyles.boldLabel);
+		GUILayout.Label("Text Editor", EditorStyles.boldLabel);
 
 		EditorGUILayout.BeginVertical("Box");
 		_SelectedLanguage = (Language)EditorGUILayout.EnumPopup("Language", _SelectedLanguage);
