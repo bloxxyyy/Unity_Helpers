@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class LocalizationSystem {
 
@@ -33,21 +34,92 @@ public class LocalizationSystem {
 		return "";
 	}
 
+	public static void AddOrReplace(string key, string value, Language language) {
+		for (int i = 0; i < Data.Count; i++) {
+			if (key == Data[i].Key) {
+
+				var Found = false;
+				for (int j = 0; j < Data[i].Value.Count; j++) {
+
+					if (language == Language.English && Data[i].Value[j].Key == "ENG")
+						Found = true;
+					if (language == Language.Japanese && Data[i].Value[j].Key == "JP")
+						Found = true;
+				}
+
+				if (Found) {
+					Replace(key, value, language, i);
+					return;
+				}
+			}
+		}
+
+		Add(key, value, language);
+	}
+
 	public static void Add(string key, string value, Language language) {
-		throw new System.Exception("Nyo!");
 		if (loader == null) loader = new JSONLoader();
 		loader.Load();
-		//loader.Add(key, value, language);
+
+		LanguageData data = new LanguageData();
+		data.Key = key;
+		data.Value = new List<KeyValuePair<string, string>>();
+		var index = -1;
+		for (int i = 0; i < Data.Count; i++) {
+
+			if (key == Data[i].Key) {
+				data = Data[i];
+				index = i;
+			}
+		}
+
+		if (language == Language.English) {
+			data.Value.Add(new KeyValuePair<string, string>("ENG", value));
+		}
+
+		if (language == Language.Japanese) {
+			data.Value.Add(new KeyValuePair<string, string>("JP", value));
+		}
+
+		if (data.Value.Count < 1) {
+			Debug.LogError("Language not found!");
+			return;
+		}
+
+		loader.Add(index, data);
 		loader.Load();
 		UpdateDictionaries();
 	}
 
-	public static void Replace(string key, string value, Language language) {
-		throw new System.Exception("Nyo!");
-
+	public static void Replace(string key, string value, Language language, int dataIndex) {
 		if (loader == null) loader = new JSONLoader();
 		loader.Load();
-		//loader.Edit(key, value, language);
+
+		var data = Data[dataIndex];
+
+		KeyValuePair<string, string> keyVal = new KeyValuePair<string, string>();
+		bool found = false;
+
+		for (int i = 0; i < data.Value.Count; i++) {
+			if (language == Language.English && data.Value[i].Key == "ENG") {
+				keyVal = new KeyValuePair<string, string>("ENG", value);
+				data.Value[i] = keyVal;
+				found = true;
+			}
+
+			if (language == Language.Japanese && data.Value[i].Key == "JP") {
+				keyVal = new KeyValuePair<string, string>("JP", value);
+				data.Value[i] = keyVal;
+				found = true;
+			}
+		}
+
+		if (!found) {
+			Debug.LogError("Couldn't Edit value!");
+			return;
+		}
+
+		loader.Edit(key, data.Value);
 		loader.Load();
 		UpdateDictionaries();
 	}

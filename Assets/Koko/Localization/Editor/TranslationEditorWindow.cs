@@ -69,12 +69,9 @@ public class TranslationEditorWindow : EditorWindow {
 			if (_Key.Length > 26) {
 				EditorUtility.DisplayDialog("Error!", "Key Length to high!", "OK!");
 			} else {
-
-				if (GetLocalizedValue(_Key, _SelectedLanguage) != string.Empty)
-					Replace(_Key, _Value, _SelectedLanguage);
-				else
-					Add(_Key, _Value, _SelectedLanguage);
-
+				AddOrReplace(_Key, _Value, _SelectedLanguage);
+				AssetDatabase.Refresh();
+				LocalizationSystem.Init();
 				_Dictionary = GetDictionaryForEditor(_SelectedLanguage);
 			}
 		}
@@ -86,17 +83,16 @@ public class TranslationEditorWindow : EditorWindow {
 		EditorGUILayout.BeginVertical();
 		_Scroll = EditorGUILayout.BeginScrollView(_Scroll);
 
-		foreach (var element in _Dictionary) {
-
-			if (element.Key.ToLower().Contains(_Search.ToLower())) {
+		for (int i = 0; i < _Dictionary.Count; i++) {
+			if (_Dictionary[i].Key.ToLower().Contains(_Search.ToLower())) {
 				EditorGUILayout.BeginHorizontal("Box");
 
-				DeleteButton(element.Key);
+				DeleteButton(_Dictionary[i].Key);
 
-				EditorGUILayout.TextField(element.Key, GUILayout.ExpandWidth(false), GUILayout.Width(160));
+				EditorGUILayout.TextField(_Dictionary[i].Key, GUILayout.ExpandWidth(false), GUILayout.Width(160));
 				EditorStyles.label.wordWrap = true;
 
-				var value = GetLocalizedValue(element.Key, _SelectedLanguage);
+				var value = GetLocalizedValue(_Dictionary[i].Key, _SelectedLanguage);
 
 				EditorGUILayout.LabelField(value, GUILayout.ExpandWidth(true));
 

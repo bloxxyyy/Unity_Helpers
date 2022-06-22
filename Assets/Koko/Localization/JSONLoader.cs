@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,7 +32,9 @@ public class JSONLoader : IFileLoader {
 	}
 
 #if UNITY_EDITOR
-	public void Add(LanguageData languageData) {
+	public void Add(int index, LanguageData languageData) {
+		if (index != -1)
+			Data.RemoveAt(index);
 		Data.Add(languageData);
 		SaveToJson();
 		Load();
@@ -56,12 +57,12 @@ public class JSONLoader : IFileLoader {
 	}
 
 	public void SaveToJson() {
-		var newData = "[ \"";
+		var newData = "{ ";
 
 		int i = 0;
 		int last = Data.Count - 1;
 		foreach (var obj in Data) {
-			newData += obj.Key + "\": { ";
+			newData += "\"" + obj.Key + "\": { ";
 
 			int j = 0;
 			int last2 = obj.Value.Count - 1;
@@ -79,7 +80,7 @@ public class JSONLoader : IFileLoader {
 		}
 		newData += " }";
 
-		System.IO.File.WriteAllText("Assets/Resources/Koko/localization.csv", newData);
+		System.IO.File.WriteAllText("Assets/Resources/Koko/localization.json", newData);
 	}
 #endif
 }

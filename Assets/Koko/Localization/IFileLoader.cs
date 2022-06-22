@@ -8,5 +8,5 @@ public interface IFileLoader {
 	void Load();
 	void Remove(string key);
 	void Edit(string key, List<KeyValuePair<string, string>> newValue);
-	void Add(LanguageData languageData);
+	void Add(int index, LanguageData languageData);
 }
