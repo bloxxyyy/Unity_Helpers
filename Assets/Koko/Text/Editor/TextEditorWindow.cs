@@ -20,7 +20,7 @@ public class TextEditorWindow : EditorWindow {
     }
 
 	private void OnEnable() {
-		_Dictionary = GetDictionaryForEditor(_SelectedLanguage);
+		_Dictionary = GetDictionaryForEditor();
 	}
 
 	public void OnGUI() {
@@ -32,7 +32,7 @@ public class TextEditorWindow : EditorWindow {
 		if (_OldValue != _SelectedLanguage) {
 			AssetDatabase.Refresh();
 			LocalizationSystem.Init();
-			_Dictionary = GetDictionaryForEditor(_SelectedLanguage);
+			_Dictionary = GetDictionaryForEditor();
 			_OldValue = _SelectedLanguage;
 		}
 
@@ -72,7 +72,7 @@ public class TextEditorWindow : EditorWindow {
 				AddOrReplace(_Key, _Value, _SelectedLanguage);
 				AssetDatabase.Refresh();
 				LocalizationSystem.Init();
-				_Dictionary = GetDictionaryForEditor(_SelectedLanguage);
+				_Dictionary = GetDictionaryForEditor();
 			}
 		}
 
@@ -112,7 +112,7 @@ public class TextEditorWindow : EditorWindow {
 				Remove(key);
 				AssetDatabase.Refresh();
 				LocalizationSystem.Init();
-				_Dictionary = GetDictionaryForEditor(_SelectedLanguage);
+				_Dictionary = GetDictionaryForEditor();
 			}
 		}
 	}

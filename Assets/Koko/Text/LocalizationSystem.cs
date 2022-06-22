@@ -124,7 +124,7 @@ public class LocalizationSystem {
 		UpdateDictionaries();
 	}
 
-	public static List<LanguageData> GetDictionaryForEditor(Language language) {
+	public static List<LanguageData> GetDictionaryForEditor() {
 		if (!isInit) Init();
 		return Data;
 	}
