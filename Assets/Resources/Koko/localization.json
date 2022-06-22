@@ -1,0 +1,11 @@
+{
+  "Hello_World": {
+    "ENG":"Hello World",
+    "JP":"Differen't language"
+  },
+
+  "Test": {
+    "ENG":"Hello Test",
+    "JP":"Differen't test"
+  }
+}

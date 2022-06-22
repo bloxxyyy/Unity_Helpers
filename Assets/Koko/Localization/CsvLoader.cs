@@ -4,7 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using static LocalizationSystem;
 
+/// <summary>
+/// #depricated
+/// </summary>
 public class CsvLoader {
 	private TextAsset csvFile;
 	private char _LineSeperator = '\n';
@@ -50,8 +54,18 @@ public class CsvLoader {
 	}
 
 #if UNITY_EDITOR
-	public void Add(string key, string value) {
-		var appended = string.Format("\n\"{0}\",\"{1}\",\"\"", key, value);
+	public void Add(string key, string value, Language language) {
+
+		// \"{0}\" , \"{1}\" , \"{2}\", \"{3}\"
+
+		var val1 = ".";
+		var val2 = ".";
+		var val3 = ".";
+
+		if (language == Language.English) val1 = value;
+		if (language == Language.Japanese) val2 = value;
+
+		var appended = string.Format("\n\"{0}\",\"{1}\",\"{2}\",\"{3}\"", key, val1, val2, val3);
 		File.AppendAllText("Assets/Resources/Koko/localization.csv", appended);
 		UnityEditor.AssetDatabase.Refresh();
 	}
@@ -80,9 +94,10 @@ public class CsvLoader {
 		}
 	}
 
-	public void Edit(string key, string value) {
+	// TODO this wont work because it will remove the values of the other languages.
+	public void Edit(string key, string value, Language language) {
 		Remove(key);
-		Add(key, value);
+		Add(key, value, language);
 	}
 #endif
 }

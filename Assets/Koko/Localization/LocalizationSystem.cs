@@ -1,85 +1,67 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class LocalizationSystem {
-	public enum Language {
-		English, Japanese, Dutch
-	}
 
-	public static Language language = Language.English;
-
-	private static Dictionary<string, string> localisedEN;
-	private static Dictionary<string, string> localisedJP;
-	private static Dictionary<string, string> localisedNL;
+	private static List<LanguageData> Data;
 
 	public static bool isInit;
-	public static CsvLoader csvLoader = new CsvLoader();
+	public static IFileLoader loader = new JSONLoader();
 
 	public static void Init() {
-		csvLoader.LoadCsv();
-
+		loader.Load();
 		UpdateDictionaries();
-
 		isInit = true;
 	}
 
 	public static void UpdateDictionaries() {
-		localisedEN = csvLoader.GetDictionaryValues("en");
-		localisedJP = csvLoader.GetDictionaryValues("jp");
-		localisedNL = csvLoader.GetDictionaryValues("nl");
+		Data = loader.GetLanguageData();
 	}
 
-	public static string GetLocalizedValue(string key) {
+	public static string GetLocalizedValue(string key, Language language) {
 		if (!isInit) Init();
 
-		string value = key;
+		for (int i = 0; i < Data.Count; i++) {
+			if (Data[i].Key == key) {
 
-		switch (language) {
-			case Language.English:
-				localisedEN.TryGetValue(key, out value);
-				break;
-			case Language.Japanese:
-				localisedJP.TryGetValue(key, out value);
-				break;
-			case Language.Dutch:
-				localisedNL.TryGetValue(key, out value);
-				break;
-			default:
-				break;
+				foreach(var val in Data[i].Value) {
+					if (language == Language.English && val.Key == "ENG") return val.Value;
+					if (language == Language.Japanese && val.Key == "JP") return val.Value;
+				}
+			}
 		}
 
-		return value;
+		return "";
 	}
 
-	public static void Add(string key, string value) {
-		if(csvLoader == null) csvLoader = new CsvLoader();
-		if (value.Contains("\"")) value.Replace('"', '\"');
-		csvLoader.LoadCsv();
-		csvLoader.Add(key, value);
-		csvLoader.LoadCsv();
+	public static void Add(string key, string value, Language language) {
+		throw new System.Exception("Nyo!");
+		if (loader == null) loader = new JSONLoader();
+		loader.Load();
+		//loader.Add(key, value, language);
+		loader.Load();
 		UpdateDictionaries();
 	}
 
-	public static void Replace(string key, string value) {
-		if(csvLoader == null) csvLoader = new CsvLoader();
-		if (value.Contains("\"")) value.Replace('"', '\"');
-		csvLoader.LoadCsv();
-		csvLoader.Edit(key, value);
-		csvLoader.LoadCsv();
+	public static void Replace(string key, string value, Language language) {
+		throw new System.Exception("Nyo!");
+
+		if (loader == null) loader = new JSONLoader();
+		loader.Load();
+		//loader.Edit(key, value, language);
+		loader.Load();
 		UpdateDictionaries();
 	}
 
-	public static Dictionary<string, string> GetDictionaryForEditor() {
+	public static List<LanguageData> GetDictionaryForEditor(Language language) {
 		if (!isInit) Init();
-		return localisedEN;
+		return Data;
 	}
 
 	public static void Remove(string key) {
-		if (csvLoader == null) csvLoader = new CsvLoader();
-		csvLoader.LoadCsv();
-		csvLoader.Remove(key);
-		csvLoader.LoadCsv();
+		if (loader == null) loader = new JSONLoader();
+		loader.Load();
+		loader.Remove(key);
+		loader.Load();
 		UpdateDictionaries();
 	}
 }
