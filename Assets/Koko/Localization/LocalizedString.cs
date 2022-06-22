@@ -8,5 +8,5 @@ public struct LocalizedString {
 		this.language = language;
 	}
 
-	public string Value => LocalizationSystem.GetLocalizedValue(key, Language.English);
+	public string Value => LocalizationSystem.GetLocalizedValue(key, language);
 }
