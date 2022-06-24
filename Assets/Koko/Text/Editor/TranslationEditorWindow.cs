@@ -5,7 +5,7 @@ using static LocalizationSystem;
 
 public class TranslationEditorWindow : EditorWindow {
 
-	private List<LanguageData> _Dictionary = new List<LanguageData>();
+	private List<JsonObjectData> _Dictionary = new List<JsonObjectData>();
 
 	private Vector2 _Scroll;
 
@@ -38,8 +38,8 @@ public class TranslationEditorWindow : EditorWindow {
 			EditorStyles.label.wordWrap = true;
 
 			EditorGUILayout.BeginVertical();
-			foreach (Language lang in (Language[])Language.GetValues(typeof(Language))) {
-				var value = GetLocalizedValue(_Dictionary[i].Key, lang);
+			for (int j = 0; j < LanguageSystem.GetLanguages().Length; j++) {
+				var value = GetLocalizedValue(_Dictionary[i].Key, LanguageSystem.GetLanguageKeyByIndex(j));
 				EditorGUILayout.LabelField(value, GUILayout.ExpandWidth(true));
 			}
 			EditorGUILayout.EndVertical();

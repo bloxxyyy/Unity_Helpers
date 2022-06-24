@@ -5,18 +5,20 @@ using UnityEngine;
 public class JSONLoader : IFileLoader {
 
 	public TextAsset File { get; set; }
-	public List<LanguageData> Data = new List<LanguageData>();
+	public string FileName { get; set; }
+
+	public List<JsonObjectData> Data = new List<JsonObjectData>();
 
 	public void Load() {
-		File = Resources.Load<TextAsset>("Koko/localization");
+		File = Resources.Load<TextAsset>("Koko/" + FileName);
 	}
 
-	public List<LanguageData> GetLanguageData() {
+	public List<JsonObjectData> GetLanguageData() {
 		Data.Clear();
 		var JsonObject = JObject.Parse(File.text);
 
 		foreach (var obj in JsonObject.Properties()) {
-			var data = new LanguageData();
+			var data = new JsonObjectData();
 			data.Key = obj.Name;
 
 			int i = 0;
@@ -32,7 +34,7 @@ public class JSONLoader : IFileLoader {
 	}
 
 #if UNITY_EDITOR
-	public void Add(int index, LanguageData languageData) {
+	public void Add(int index, JsonObjectData languageData) {
 		if (index != -1)
 			Data.RemoveAt(index);
 		Data.Add(languageData);
@@ -80,7 +82,7 @@ public class JSONLoader : IFileLoader {
 		}
 		newData += " }";
 
-		System.IO.File.WriteAllText("Assets/Resources/Koko/localization.json", newData);
+		System.IO.File.WriteAllText("Assets/Resources/Koko/" + FileName + ".json", newData);
 	}
 #endif
 }

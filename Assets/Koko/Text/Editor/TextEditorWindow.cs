@@ -7,11 +7,9 @@ public class TextEditorWindow : EditorWindow {
 
 	private string _Search = "";
 	private Vector2 _Scroll;
-	private List<LanguageData> _Dictionary = new List<LanguageData>();
+	private List<JsonObjectData> _Dictionary = new List<JsonObjectData>();
 	private string _Key = "";
 	private string _Value = "";
-	private Language _SelectedLanguage = Language.English;
-	private Language _OldValue = Language.English;
 
 	[MenuItem("Window/Koko/Text/TextEditor")]
     public static void Init() {
@@ -24,19 +22,12 @@ public class TextEditorWindow : EditorWindow {
 	}
 
 	public void OnGUI() {
-
 		GUILayout.Label("Text Editor", EditorStyles.boldLabel);
 
 		EditorGUILayout.BeginVertical("Box");
-		_SelectedLanguage = (Language)EditorGUILayout.EnumPopup("Language", _SelectedLanguage);
-		if (_OldValue != _SelectedLanguage) {
-			AssetDatabase.Refresh();
-			LocalizationSystem.Init();
-			_Dictionary = GetDictionaryForEditor();
-			_OldValue = _SelectedLanguage;
-		}
-
-
+		LanguageSystem.SetLanguageBasedOnIndex(EditorGUILayout.Popup("Language", LanguageSystem.GetIndexOfCurrentLanguage(), LanguageSystem.GetLanguages()));
+		AssetDatabase.Refresh();
+		LocalizationSystem.Init();
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Search: ", EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
@@ -69,7 +60,7 @@ public class TextEditorWindow : EditorWindow {
 			if (_Key.Length > 26) {
 				EditorUtility.DisplayDialog("Error!", "Key Length to high!", "OK!");
 			} else {
-				AddOrReplace(_Key, _Value, _SelectedLanguage);
+				AddOrReplace(_Key, _Value, LanguageSystem.CurrentLanguageKey);
 				AssetDatabase.Refresh();
 				LocalizationSystem.Init();
 				_Dictionary = GetDictionaryForEditor();
@@ -92,7 +83,7 @@ public class TextEditorWindow : EditorWindow {
 				EditorGUILayout.TextField(_Dictionary[i].Key, GUILayout.ExpandWidth(false), GUILayout.Width(160));
 				EditorStyles.label.wordWrap = true;
 
-				var value = GetLocalizedValue(_Dictionary[i].Key, _SelectedLanguage);
+				var value = GetLocalizedValue(_Dictionary[i].Key, LanguageSystem.CurrentLanguageKey);
 
 				EditorGUILayout.LabelField(value, GUILayout.ExpandWidth(true));
 
