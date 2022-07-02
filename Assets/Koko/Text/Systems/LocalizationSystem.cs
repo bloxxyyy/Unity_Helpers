@@ -41,7 +41,7 @@ public class LocalizationSystem {
 
 		var data = new JsonObjectData();
 		data.Key = key;
-		data.Value = new List<KeyValuePair<string, string>>();
+
 		var index = -1;
 		for (int i = 0; i < Data.Count; i++) {
 
@@ -51,7 +51,7 @@ public class LocalizationSystem {
 			}
 		}
 
-		data.Value.Add(new KeyValuePair<string, string>(LanguageSystem.Give(), value));
+		data.GetValue<JsonListValue>().Value.Add(new KeyValuePair<string, string>(LanguageSystem.Give(), value));
 
 		loader.Add(index, data);
 		loader.Load();

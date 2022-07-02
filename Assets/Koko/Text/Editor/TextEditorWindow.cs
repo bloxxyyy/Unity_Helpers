@@ -11,11 +11,23 @@ public class TextEditorWindow : EditorWindow {
 	private string _Key = "";
 	private string _Value = "";
 
+	// Language variables
+	private string oldLanguage = "";
+	private int oldIndex = -1;
+	private string[] curLanguages;
+	private int langIndex = -1;
+	// -------------------------
+
 	[MenuItem("Window/Koko/Text/TextEditor")]
     public static void Init() {
         var window = (TextEditorWindow)GetWindow(typeof(TextEditorWindow));
         window.Show();
     }
+
+	/// <summary>
+	/// Because the translation window changes the languages.
+	/// </summary>
+	void OnFocus() => curLanguages = LanguageSystem.GetLanguages();
 
 	private void OnEnable() {
 		_Dictionary = GetDictionaryForEditor();
@@ -23,11 +35,9 @@ public class TextEditorWindow : EditorWindow {
 
 	public void OnGUI() {
 		GUILayout.Label("Text Editor", EditorStyles.boldLabel);
-
 		EditorGUILayout.BeginVertical("Box");
-		LanguageSystem.SetLanguageBasedOnIndex(EditorGUILayout.Popup("Language", LanguageSystem.GetIndexOfCurrentLanguage(), LanguageSystem.GetLanguages()));
-		AssetDatabase.Refresh();
-		LocalizationSystem.Init();
+
+		SetLanguageTab();
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Search: ", EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
@@ -105,6 +115,30 @@ public class TextEditorWindow : EditorWindow {
 				LocalizationSystem.Init();
 				_Dictionary = GetDictionaryForEditor();
 			}
+		}
+	}
+
+	/// <summary>
+	/// Set the language information and update but only if the language changed.
+	/// </summary>
+	private void SetLanguageTab() {
+		if (oldIndex == -1) {
+			langIndex = LanguageSystem.GetIndexOfCurrentLanguage();
+			curLanguages = LanguageSystem.GetLanguages();
+		}
+
+		var i = EditorGUILayout.Popup("Language", langIndex, curLanguages);
+		if (i != oldIndex) {
+			oldIndex = i;
+			LanguageSystem.SetLanguageBasedOnIndex(i);
+			langIndex = LanguageSystem.GetIndexOfCurrentLanguage();
+			curLanguages = LanguageSystem.GetLanguages();
+		}
+
+		if (LanguageSystem.CurrentLanguageKey != oldLanguage) {
+			oldLanguage = LanguageSystem.CurrentLanguageKey;
+			AssetDatabase.Refresh();
+			LocalizationSystem.Init();
 		}
 	}
 }

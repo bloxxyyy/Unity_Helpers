@@ -9,6 +9,9 @@ public class TranslationEditorWindow : EditorWindow {
 
 	private Vector2 _Scroll;
 
+	private string _Key = "";
+	private string _Value = "";
+
 	[MenuItem("Window/Koko/Text/TranslationEditor")]
 	public static void Init() {
 		var window = (TranslationEditorWindow)GetWindow(typeof(TranslationEditorWindow));
@@ -28,26 +31,70 @@ public class TranslationEditorWindow : EditorWindow {
 	}
 
 	private void GetResults() {
-		EditorGUILayout.BeginVertical();
-		_Scroll = EditorGUILayout.BeginScrollView(_Scroll);
 
+		GetInsertItem();
+
+		using (new GUILayout.VerticalScope()) {
+			using var scope = new GUILayout.ScrollViewScope(_Scroll);
+			LoadItems();
+			_Scroll = scope.scrollPosition;
+		}
+	}
+
+	private void LoadItems() {
 		for (int i = 0; i < _Dictionary.Count; i++) {
-			EditorGUILayout.BeginHorizontal("Box");
 
-			EditorGUILayout.TextField(_Dictionary[i].Key, GUILayout.ExpandWidth(false), GUILayout.Width(160));
-			EditorStyles.label.wordWrap = true;
+			using (new GUILayout.HorizontalScope("Box")) {
 
-			EditorGUILayout.BeginVertical();
-			for (int j = 0; j < LanguageSystem.GetLanguages().Length; j++) {
-				var value = GetLocalizedValue(_Dictionary[i].Key, LanguageSystem.GetLanguageKeyByIndex(j));
-				EditorGUILayout.LabelField(value, GUILayout.ExpandWidth(true));
+				EditorStyles.label.wordWrap = true;
+				var key = _Dictionary[i].Key;
+				GUILayout.Label(key, EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
+
+				using (new GUILayout.VerticalScope()) {
+					for (int j = 0; j < LanguageSystem.GetLanguages().Length; j++) {
+
+						var index = LanguageSystem.GetLanguageKeyByIndex(j);
+
+						var value = GetLocalizedValue(_Dictionary[i].Key, index);
+
+						using (new GUILayout.HorizontalScope()) {
+							GUILayout.Label(index, EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(30));
+							EditorGUILayout.TextField(value, GUILayout.ExpandWidth(true));
+						}
+					}
+				}
+
 			}
-			EditorGUILayout.EndVertical();
 
-			EditorGUILayout.EndHorizontal();
+		}
+	}
+
+	private void GetInsertItem() {
+
+		EditorGUILayout.BeginVertical("box");
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label("Key: ", EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
+		_Key = EditorGUILayout.TextField(_Key, EditorStyles.textField, GUILayout.ExpandWidth(true));
+		EditorGUILayout.EndHorizontal();
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label("Value: ", EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
+		EditorStyles.textArea.wordWrap = true;
+		_Value = EditorGUILayout.TextArea(_Value, EditorStyles.textArea, GUILayout.ExpandWidth(true));
+		EditorGUILayout.EndHorizontal();
+
+		if (GUILayout.Button("Add Or Update Language")) {
+
+			if (_Key.Length > 5) {
+				EditorUtility.DisplayDialog("Error!", "Key Length to high!", "OK!");
+			} else {
+				LanguageSystem.AddLanguage(_Key, _Value);
+				AssetDatabase.Refresh();
+				LocalizationSystem.Init();
+			}
 		}
 
-		EditorGUILayout.EndScrollView();
 		EditorGUILayout.EndVertical();
 	}
 }

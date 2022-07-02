@@ -27,8 +27,8 @@ public class LanguageSystem {
 	}
 
 	public static string GetValLanguageByKey(JsonObjectData obj, string langKey) {
-		for (int i = 0; i < obj.Value.Count; i++) {
-			if (obj.Value[i].Key == langKey) return obj.Value[i].Value;
+		for (int i = 0; i < obj.GetValue<JsonListValue>().Value.Count; i++) {
+			if (obj.GetValue<JsonListValue>().Value[i].Key == langKey) return obj.GetValue<JsonListValue>().Value[i].Value;
 		}
 
 		return "";
@@ -50,12 +50,11 @@ public class LanguageSystem {
 		if (!isInit) Init();
 		var langData = Languages[0];
 
-		for (int i = 0; i < langData.Value.Count; i++) {
-			if (langData.Value[i].Key == CurrentLanguageKey)
+		for (int i = 0; i < langData.GetValue<JsonListValue>().Value.Count; i++) {
+			if (langData.GetValue<JsonListValue>().Value[i].Key == CurrentLanguageKey)
 				return i;
 		}
 
-		Debug.LogError("This should not be possible! Language set incorrectly!");
 		return 0;
 	}
 
@@ -63,23 +62,24 @@ public class LanguageSystem {
 		if (!isInit) Init();
 		var langData = Languages[0];
 
-		var languages = new string[langData.Value.Count];
-		for (int i = 0; i < langData.Value.Count; i++) {
+		var languages = new string[langData.GetValue<JsonListValue>().Value.Count];
+		for (int i = 0; i < langData.GetValue<JsonListValue>().Value.Count; i++) {
 			if (index == i)
-				CurrentLanguageKey = langData.Value[i].Key;
+				CurrentLanguageKey = langData.GetValue<JsonListValue>().Value[i].Key;
 		}
 	}
 
 	public static string[] GetLanguages() {
 		if (!isInit) Init();
-		if (Languages == null)
-			throw new Exception("No languages found! Big error! Abort!");
+		if (Languages == null) throw new Exception("No languages found! Big error! Abort!");
+
+		UpdateDictionaries();
 
 		var langData = Languages[0];
 
-		var languages = new string[langData.Value.Count];
-		for (int i = 0; i < langData.Value.Count; i++) {
-			languages[i] = langData.Value[i].Value;
+		var languages = new string[langData.GetValue<JsonListValue>().Value.Count];
+		for (int i = 0; i < langData.GetValue<JsonListValue>().Value.Count; i++) {
+			languages[i] = langData.GetValue<JsonListValue>().Value[i].Value;
 		}
 		return languages;
 	}
@@ -97,7 +97,7 @@ public class LanguageSystem {
 	public static string GetLanguageKeyByIndex(int j) {
 		if (!isInit) Init();
 
-		var langData = Languages[0].Value;
+		var langData = Languages[0].GetValue<JsonListValue>().Value;
 
 		for (int i = 0; i < langData.Count; i++) {
 			if (i == j)
@@ -106,5 +106,24 @@ public class LanguageSystem {
 
 		Debug.LogError("Couldn't find key by index!");
 		return "";
+	}
+
+	public static void AddLanguage(string key, string value) {
+		if (loader == null) loader = new JSONLoader();
+		loader.Load();
+
+		var data = new JsonObjectData();
+		data.Key = key;
+		data.GetValue<JsonListValue>().Value.Add(new KeyValuePair<string, string>(key, value));
+
+		var index = -1;
+		var Data = Languages[0].GetValue<JsonListValue>().Value;
+		for (int i = 0; i < Data.Count; i++) {
+			if (key == Data[i].Key) index = i;
+		}
+
+		loader.Add(index, data);
+		loader.Load();
+		UpdateDictionaries();
 	}
 }
