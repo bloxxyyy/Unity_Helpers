@@ -86,9 +86,9 @@ public class LanguageSystem {
 
 	public static JsonObjectData GetObjectByKey(string languageKey) {
 		if (!isInit) Init();
-		foreach (var language in Languages) {
+		foreach (var language in Languages[0].GetValue<JsonListValue>().Value) {
 			if (language.Key == languageKey)
-				return language;
+				return Languages[0];
 		}
 
 		return null;

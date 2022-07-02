@@ -90,8 +90,11 @@ public class TextEditorWindow : EditorWindow {
 
 				DeleteButton(_Dictionary[i].Key);
 
-				EditorGUILayout.TextField(_Dictionary[i].Key, GUILayout.ExpandWidth(false), GUILayout.Width(160));
+				var key = _Dictionary[i].Key;
+
 				EditorStyles.label.wordWrap = true;
+				GUILayout.Label(key, EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(160));
+
 
 				var value = GetLocalizedValue(_Dictionary[i].Key, LanguageSystem.CurrentLanguageKey);
 

@@ -59,7 +59,12 @@ public class TranslationEditorWindow : EditorWindow {
 
 						using (new GUILayout.HorizontalScope()) {
 							GUILayout.Label(index, EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(30));
-							EditorGUILayout.TextField(value, GUILayout.ExpandWidth(true));
+							var newValue = EditorGUILayout.TextField(value, GUILayout.ExpandWidth(true));
+							if (newValue != value) {
+								Replace(_Dictionary[i].Key, newValue, index);
+								AssetDatabase.Refresh();
+								LocalizationSystem.Init();
+							}
 						}
 					}
 				}

@@ -30,6 +30,39 @@ public class LocalizationSystem {
 		return "";
 	}
 
+	public static void Replace(string key, string value, string languageKey) {
+		if (loader == null)	loader = new JSONLoader();
+		loader.Load();
+
+		var dataObj = new JsonObjectData();
+
+		var index = -1;
+		for (int i = 0; i < Data.Count; i++) {
+
+			if (key == Data[i].Key) {
+				dataObj.Key = Data[i].Key;
+				index = i;
+
+				var TranslatedObjectesInKey = Data[i].GetValue<JsonListValue>().Value;
+
+				for (int j = 0; j < TranslatedObjectesInKey.Count; j++) {
+					if (TranslatedObjectesInKey[j].Key != languageKey) {
+						dataObj.GetValue<JsonListValue>().Value.Add(TranslatedObjectesInKey[j]);
+					}
+				}
+
+				dataObj.GetValue<JsonListValue>().Value.Add(new KeyValuePair<string, string>(languageKey, value));
+
+				Data[i] = dataObj;
+				loader.Add(index, dataObj);
+				loader.Load();
+				UpdateDictionaries();
+				break;
+			}
+		}
+
+	}
+
 	public static void AddOrReplace(string key, string value, string languageKey) {
 		var obj = LanguageSystem.GetObjectByKey(languageKey);
 		Add(key, value, obj);
@@ -48,10 +81,11 @@ public class LocalizationSystem {
 			if (key == Data[i].Key) {
 				data = Data[i];
 				index = i;
+				break;
 			}
 		}
 
-		data.GetValue<JsonListValue>().Value.Add(new KeyValuePair<string, string>(LanguageSystem.Give(), value));
+		data.GetValue<JsonListValue>().Value.Add(new KeyValuePair<string, string>(LanguageSystem.Give().ToUpper(), value));
 
 		loader.Add(index, data);
 		loader.Load();
