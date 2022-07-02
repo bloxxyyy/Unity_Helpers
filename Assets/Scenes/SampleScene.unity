@@ -411,7 +411,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 654e9d4ef46672249b21f39b428fefd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: hello_world
+  localizedString:
+    key: hello_world
+    language: 0
 --- !u!222 &616402733
 CanvasRenderer:
   m_ObjectHideFlags: 0
