@@ -1,105 +1,108 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static LocalizationSystem;
+using static Koko.LocalizationSystem;
 
-public class TranslationEditorWindow : EditorWindow {
+namespace Koko {
 
-	private List<JsonObjectData> _Dictionary = new List<JsonObjectData>();
+	public class TranslationEditorWindow : EditorWindow {
 
-	private Vector2 _Scroll;
+		private List<JsonObjectData> _Dictionary = new List<JsonObjectData>();
 
-	private string _Key = "";
-	private string _Value = "";
+		private Vector2 _Scroll;
 
-	[MenuItem("Window/Koko/Text/TranslationEditor")]
-	public static void Init() {
-		var window = (TranslationEditorWindow)GetWindow(typeof(TranslationEditorWindow));
-		window.Show();
-	}
+		private string _Key = "";
+		private string _Value = "";
 
-	private void OnEnable() {
-		_Dictionary = GetDictionaryForEditor();
-		AssetDatabase.Refresh();
-		LocalizationSystem.Init();
-		_Dictionary = GetDictionaryForEditor();
-	}
-
-	public void OnGUI() {
-		GUILayout.Label("Translation Editor", EditorStyles.boldLabel);
-		GetResults();
-	}
-
-	private void GetResults() {
-
-		GetInsertItem();
-
-		using (new GUILayout.VerticalScope()) {
-			using var scope = new GUILayout.ScrollViewScope(_Scroll);
-			LoadItems();
-			_Scroll = scope.scrollPosition;
+		[MenuItem("Koko/Text/TranslationEditor")]
+		public static void Init() {
+			var window = (TranslationEditorWindow)GetWindow(typeof(TranslationEditorWindow));
+			window.Show();
 		}
-	}
 
-	private void LoadItems() {
-		for (int i = 0; i < _Dictionary.Count; i++) {
+		private void OnEnable() {
+			_Dictionary = GetDictionaryForEditor();
+			AssetDatabase.Refresh();
+			LocalizationSystem.Init();
+			_Dictionary = GetDictionaryForEditor();
+		}
 
-			using (new GUILayout.HorizontalScope("Box")) {
+		public void OnGUI() {
+			GUILayout.Label("Translation Editor", EditorStyles.boldLabel);
+			GetResults();
+		}
 
-				EditorStyles.label.wordWrap = true;
-				var key = _Dictionary[i].Key;
-				GUILayout.Label(key, EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
+		private void GetResults() {
 
-				using (new GUILayout.VerticalScope()) {
-					for (int j = 0; j < LanguageSystem.GetLanguages().Length; j++) {
+			GetInsertItem();
 
-						var index = LanguageSystem.GetLanguageKeyByIndex(j);
+			using (new GUILayout.VerticalScope()) {
+				using var scope = new GUILayout.ScrollViewScope(_Scroll);
+				LoadItems();
+				_Scroll = scope.scrollPosition;
+			}
+		}
 
-						var value = GetLocalizedValue(_Dictionary[i].Key, index);
+		private void LoadItems() {
+			for (int i = 0; i < _Dictionary.Count; i++) {
 
-						using (new GUILayout.HorizontalScope()) {
-							GUILayout.Label(index, EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(30));
-							var newValue = EditorGUILayout.TextField(value, GUILayout.ExpandWidth(true));
-							if (newValue != value) {
-								Replace(_Dictionary[i].Key, newValue, index);
-								AssetDatabase.Refresh();
-								LocalizationSystem.Init();
+				using (new GUILayout.HorizontalScope("Box")) {
+
+					EditorStyles.label.wordWrap = true;
+					var key = _Dictionary[i].Key;
+					GUILayout.Label(key, EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
+
+					using (new GUILayout.VerticalScope()) {
+						for (int j = 0; j < LanguageSystem.GetLanguages().Length; j++) {
+
+							var index = LanguageSystem.GetLanguageKeyByIndex(j);
+
+							var value = GetLocalizedValue(_Dictionary[i].Key, index);
+
+							using (new GUILayout.HorizontalScope()) {
+								GUILayout.Label(index, EditorStyles.label, GUILayout.ExpandWidth(false), GUILayout.Width(30));
+								var newValue = EditorGUILayout.TextField(value, GUILayout.ExpandWidth(true));
+								if (newValue != value) {
+									Replace(_Dictionary[i].Key, newValue, index);
+									AssetDatabase.Refresh();
+									LocalizationSystem.Init();
+								}
 							}
 						}
 					}
+
 				}
 
 			}
-
 		}
-	}
 
-	private void GetInsertItem() {
+		private void GetInsertItem() {
 
-		EditorGUILayout.BeginVertical("box");
+			EditorGUILayout.BeginVertical("box");
 
-		EditorGUILayout.BeginHorizontal();
-		GUILayout.Label("Key: ", EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
-		_Key = EditorGUILayout.TextField(_Key, EditorStyles.textField, GUILayout.ExpandWidth(true));
-		EditorGUILayout.EndHorizontal();
+			EditorGUILayout.BeginHorizontal();
+			GUILayout.Label("Key: ", EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
+			_Key = EditorGUILayout.TextField(_Key, EditorStyles.textField, GUILayout.ExpandWidth(true));
+			EditorGUILayout.EndHorizontal();
 
-		EditorGUILayout.BeginHorizontal();
-		GUILayout.Label("Value: ", EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
-		EditorStyles.textArea.wordWrap = true;
-		_Value = EditorGUILayout.TextArea(_Value, EditorStyles.textArea, GUILayout.ExpandWidth(true));
-		EditorGUILayout.EndHorizontal();
+			EditorGUILayout.BeginHorizontal();
+			GUILayout.Label("Value: ", EditorStyles.boldLabel, GUILayout.ExpandWidth(false), GUILayout.Width(100));
+			EditorStyles.textArea.wordWrap = true;
+			_Value = EditorGUILayout.TextArea(_Value, EditorStyles.textArea, GUILayout.ExpandWidth(true));
+			EditorGUILayout.EndHorizontal();
 
-		if (GUILayout.Button("Add Or Update Language")) {
+			if (GUILayout.Button("Add Or Update Language")) {
 
-			if (_Key.Length > 5) {
-				EditorUtility.DisplayDialog("Error!", "Key Length to high!", "OK!");
-			} else {
-				LanguageSystem.AddLanguage(_Key, _Value);
-				AssetDatabase.Refresh();
-				LocalizationSystem.Init();
+				if (_Key.Length > 5) {
+					EditorUtility.DisplayDialog("Error!", "Key Length to high!", "OK!");
+				} else {
+					LanguageSystem.AddLanguage(_Key, _Value);
+					AssetDatabase.Refresh();
+					LocalizationSystem.Init();
+				}
 			}
-		}
 
-		EditorGUILayout.EndVertical();
+			EditorGUILayout.EndVertical();
+		}
 	}
 }

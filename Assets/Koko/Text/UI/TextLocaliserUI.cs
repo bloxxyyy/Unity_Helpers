@@ -1,15 +1,18 @@
 using TMPro;
 using UnityEngine;
 
-[RequireComponent(typeof(TextMeshProUGUI))]
-public class TextLocaliserUI : MonoBehaviour {
+namespace Koko {
 
-    private TextMeshProUGUI textfield;
-    public LocalizedString localizedString;
+    [RequireComponent(typeof(TextMeshProUGUI))]
+    public class TextLocaliserUI : MonoBehaviour {
 
-    void Start() {
-        textfield = GetComponent<TextMeshProUGUI>();
-        textfield.text = localizedString.Value;
+        private TextMeshProUGUI textfield;
+        public LocalizedString localizedString;
+
+        void Start() {
+            textfield = GetComponent<TextMeshProUGUI>();
+            textfield.text = localizedString.Value;
+        }
+
     }
-
 }
